@@ -1,9 +1,22 @@
 pipeline {
     agent { docker { image 'node:14-alpine' } }
     stages {
-       stage('No-op') {
+       stage('Deploy - Staging') {
             steps {
-                sh 'ls'
+                sh './deploy staging'
+                sh './run-smoke-tests'
+            }
+        }
+
+        stage('Sanity check') {
+            steps {
+                input "Does the staging environment look ok?"
+            }
+        }
+
+        stage('Deploy - Production') {
+            steps {
+                sh './deploy production'
             }
         }
     }
